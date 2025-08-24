@@ -3,6 +3,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Grafo {
+	
+	public static final int _blanco = 0;
+	public static final int _negro = 1;
+	public static final int _equis = 2;
+	
 	private int[][] _matriz;
 	private int _vertices;
 	
@@ -15,6 +20,11 @@ public class Grafo {
 	//obtengo el valor de la matriz
 	public int obtenerValorDeMatriz(int fila, int columna) {
 		return _matriz[fila][columna];
+	}
+	
+	// Cambia el valor del casillero: 0 (blanco) -> 1 (negro) -> 2 (X) --> 0 ...
+	public void cambiarEstadoCasillero(int fila, int columna) {
+		_matriz[fila][columna] = (_matriz[fila][columna] + 1) % 3;
 	}
 	
 	public boolean casilleroValido(int fila, int columna, int casilleroSeleccionado) {

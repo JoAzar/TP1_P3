@@ -8,17 +8,24 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.SwingConstants;
+
+import presenter.Presenter;
 
 public class View {
 	private JFrame frame;
+	private JButton[][] botones;
+	private final Presenter presenter;
 
-	public View() {
+	public View(Presenter presenter) {
+		this.presenter = presenter;
 		initialize();
 	}
 
 	private void initialize() {
-		frame = new JFrame("Cosodoku no me acuerdo el nombre 123");
+		frame = new JFrame("Nonograma");
 	    frame.setBounds(100, 100, 300, 300); //posición X e Y, tamaño ancho | alto
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    // Hacer visible la ventana
@@ -32,6 +39,7 @@ public class View {
 	    int totalColumnas = cantidadDeCasillas + 1;
 
 	    frame.getContentPane().setLayout(new GridLayout(totalFilas, totalColumnas, 2, 2));
+	    botones = new JButton[cantidadDeCasillas][cantidadDeCasillas];
 
 	    for (int fila = 0; fila < totalFilas; fila++) {
 	        for (int col = 0; col < totalColumnas; col++) {
@@ -53,7 +61,18 @@ public class View {
 	            } else {
 	                //Botones del tablero
 	                JButton boton = new JButton();
-	                boton.setBackground(new Color(192, 97, 203));
+	                boton.setFocusPainted(false);
+	                boton.setOpaque(true);
+	                boton.setBackground(Color.WHITE);
+	                
+	                final int f = fila - 1;
+	                final int c = col - 1;
+	                
+	                boton.addActionListener(e -> presenter.asignarValorACasillero(f, c));
+	                
+	                // Casilleros
+	                botones[f][c] = boton;
+	                
 	                frame.getContentPane().add(boton);
 	            }
 	        }
@@ -65,6 +84,24 @@ public class View {
 			
 	}
 	
-	
+	// Se llama a este método desde el Presenter luego de un cambio de estado para actualizarlo en el View.
+	public void actualizarCasillero(int fila, int columna, int estado) {
+		JButton b = botones[fila][columna];
+		
+		// Casillero en BLANCO (estándar)
+		b.setText("");
+		b.setBackground(Color.WHITE);
+		
+		// Casillero en NEGRO
+		if(estado == model.Grafo._negro) {
+			b.setBackground(Color.BLACK);
+		}
+		// Casillero en X
+		else if(estado == model.Grafo._equis){
+			b.setText("X");
+			b.setForeground(Color.RED);
+			b.setBackground(Color.WHITE);
+		}
+	}
 
 }
