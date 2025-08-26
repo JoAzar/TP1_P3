@@ -1,6 +1,5 @@
 package view;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -9,18 +8,15 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Dimension;
-
 import javax.swing.SwingConstants;
-
 import presenter.Presenter;
 
 public class View {
 	private JFrame frame;
 	private JButton[][] botones;
-	private final Presenter presenter;
-
-	public View(Presenter presenter) {
-		this.presenter = presenter;
+	private VistaListener _listener;
+	
+	public View() {
 		initialize();
 	}
 
@@ -28,7 +24,6 @@ public class View {
 		frame = new JFrame("Nonograma");
 	    frame.setBounds(100, 100, 300, 300); //posición X e Y, tamaño ancho | alto
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    // Hacer visible la ventana
 	    frame.setVisible(true);
 	}
 	
@@ -65,13 +60,18 @@ public class View {
 	                boton.setOpaque(true);
 	                boton.setBackground(Color.WHITE);
 	                
-	                final int f = fila - 1;
-	                final int c = col - 1;
+	                final int _fila = fila - 1;
+	                final int _columna = col - 1;
 	                
-	                boton.addActionListener(e -> presenter.asignarValorACasillero(f, c));
+	                //boton.addActionListener(e -> presenter.asignarValorACasillero(_fila, _columna));
+	                boton.addActionListener(e -> {
+	                    if (_listener != null) {
+	                        _listener.enCasillaSeleccionada(_fila, _columna, true); 
+	                    }
+	                });
 	                
-	                // Casilleros
-	                botones[f][c] = boton;
+	                //Casilleros
+	                botones[_fila][_columna] = boton;
 	                
 	                frame.getContentPane().add(boton);
 	            }
@@ -84,7 +84,7 @@ public class View {
 			
 	}
 	
-	// Se llama a este método desde el Presenter luego de un cambio de estado para actualizarlo en el View.
+	//Se llama a este método desde el Presenter luego de un cambio de estado para actualizarlo en el View.
 	public void actualizarCasillero(int fila, int columna, int estado) {
 		JButton b = botones[fila][columna];
 		
@@ -93,15 +93,21 @@ public class View {
 		b.setBackground(Color.WHITE);
 		
 		// Casillero en NEGRO
-		if(estado == model.Grafo._negro) {
+		if(estado == model.Tablero._casillero_relleno) {
 			b.setBackground(Color.BLACK);
 		}
 		// Casillero en X
-		else if(estado == model.Grafo._equis){
+		else if(estado == model.Tablero._casillero_incorrecto){
 			b.setText("X");
 			b.setForeground(Color.RED);
 			b.setBackground(Color.WHITE);
 		}
 	}
+	
+	public void crearListener(VistaListener listener) {
+		_listener = listener;
+	}
+	
+	
 
 }

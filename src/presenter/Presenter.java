@@ -1,38 +1,30 @@
 package presenter;
-import model.Grafo;
+import model.Tablero;
 import view.View;
+import view.VistaListener;
 
-public class Presenter {
-	Grafo _grafo;
+public class Presenter implements VistaListener {
+	Tablero _tablero;
 	View _vista;
-	int _casillas;
 	
-	public void inicializarTableroModel(int casillas) {
-		_grafo = new Grafo(casillas);
-		_casillas = casillas;
+	public void inicializarTableroPresenter(Tablero tablero, View vista) {
+		_tablero = tablero;
+		_vista = vista;
+		_vista.crearListener(this);
+		_vista.crearTableroView(_tablero.tamano());
 	}
 	
-	public void inicializarTableroView() {
-		_vista = new View(this);
+	//LLAMA A LA INTERFACE DE VISTA PARA COMUNICARSE CON LA CLASE VISTA
+	@Override
+	public void enCasillaSeleccionada(int fila, int columna, boolean rellena) {
+	    int estado = rellena ? Tablero._casillero_relleno : Tablero._casillero_incorrecto;
+	    _tablero.cambiarEstadoCasillero(fila, columna);
+	    _vista.actualizarCasillero(fila, columna, estado);
 	}
 	
-	public void construirTableroView() {
-		_vista.crearTableroView(_casillas);
-	}
 	
-	public void asignarValorACasillero(int fila, int columna) {
-		_grafo.cambiarEstadoCasillero(fila, columna);
-		int _estado = _grafo.obtenerValorDeMatriz(fila, columna);
-		_vista.actualizarCasillero(fila, columna, _estado);
-	}
 	
-//	public void asignarValoresACasilleros() {
-//		
-//	}
 	
-	public void controlarCasilleros(int casilla_x, int casilla_y, int casilleroSeleccionado) {
-		_grafo.casilleroValido(casilla_x, casilla_y, casilleroSeleccionado);
-	}
 	
 	
 	
