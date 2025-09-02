@@ -11,6 +11,7 @@ public class Main {
 		View vista = new View();
 		Tablero tablero = new Tablero(5,5);
 		presenter.inicializarTableroPresenter(tablero, vista);
+		
 	}
 
 }
