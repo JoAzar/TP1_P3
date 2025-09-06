@@ -11,6 +11,7 @@ public class Tablero {
 	private int _fila;
 	private int _columna;
 	private int[][] _tablero;
+	public int[][] _solucion;
 	public List<List<Integer>> _pistasEnFilas;
 	public List<List<Integer>> _pistasEnColumnas;
 	
@@ -24,9 +25,13 @@ public class Tablero {
 	    for(int j = 0; j < columna; j++) _pistasEnColumnas.add(new ArrayList<>());
 	}
 	
-	//Cambia el valor del casillero: 0 (blanco) -> 1 (negro) -> 2 (X) -> 0
+	//Cambia el valor del casillero: (blanco) -> 0 (negro) -> 1 (X) -> 2
 	public void cambiarEstadoCasillero(int fila, int columna) {
-		if(_tablero[fila][columna] == _casillero_inicial) _tablero[fila][columna] = _casillero_relleno;
+		_tablero[fila][columna] = (_tablero[fila][columna] + 1) % 3;
+	}
+	
+	public int obtenerEstadoCasillero(int fila, int columna) {
+	    return _tablero[fila][columna];
 	}
 
 	public List<Integer> obtenerPistasColumna(int columna) {
@@ -54,95 +59,100 @@ public class Tablero {
 	}
 	
 	public void generarSolucionRandom() {
-        Random random = new Random();
-        for(int i = 0; i < _fila; i++) {
-            for(int j = 0; j < _columna; j++) 
-                _tablero[i][j] = random.nextBoolean() ? 1 : 0;
-        }
-    }
+	    Random random = new Random();
+	    _solucion = new int[_fila][_columna];
+	    for(int i = 0; i < _fila; i++) {
+	        for(int j = 0; j < _columna; j++) {
+	            _tablero[i][j] = 0;
+	            _solucion[i][j] = random.nextBoolean() ? _casillero_relleno : _casillero_inicial;
+	        }
+	    }
+	}
 	
 	public void calcularPistas() {
-        for(int i = 0; i < _fila; i++) {
-            List<Integer> pistasFila = new ArrayList<>();
-            int contador = 0;
-            for(int j = 0; j < _columna; j++) {
-                if(_tablero[i][j] == 1) contador++;
-                else {
-                    if(contador > 0) {
-                        pistasFila.add(contador);
-                        contador = 0;
-                    }
-                }
-            }
-            if(contador > 0) pistasFila.add(contador);
-            if(pistasFila.isEmpty()) pistasFila.add(0);
-            _pistasEnFilas.set(i, pistasFila);
-        }
+	    // Calculamos pistas para las filas y columnas usando _solucion
+	    for(int i = 0; i < _fila; i++) {
+	        List<Integer> pistasFila = new ArrayList<>();
+	        int contador = 0;
+	        for(int j = 0; j < _columna; j++) {
+	            if(_solucion[i][j] == _casillero_relleno) contador++;
+	            else {
+	                if(contador > 0) {
+	                    pistasFila.add(contador);
+	                    contador = 0;
+	                }
+	            }
+	        }
+	        if(contador > 0) pistasFila.add(contador);
+	        if(pistasFila.isEmpty()) pistasFila.add(0);
+	        _pistasEnFilas.set(i, pistasFila);
+	    }
 
-        for(int j = 0; j < _columna; j++) {
-            List<Integer> pistasColumna = new ArrayList<>();
-            int contador = 0;
-            for(int i = 0; i < _fila; i++) {
-                if(_tablero[i][j] == 1) contador++;
-                else {
-                    if(contador > 0) {
-                        pistasColumna.add(contador);
-                        contador = 0;
-                    }
-                }
-            }
-            if(contador > 0) pistasColumna.add(contador);
-            if(pistasColumna.isEmpty()) pistasColumna.add(0);
-            _pistasEnColumnas.set(j, pistasColumna);
-        }
-    }
+	    for(int j = 0; j < _columna; j++) {
+	        List<Integer> pistasColumna = new ArrayList<>();
+	        int contador = 0;
+	        for(int i = 0; i < _fila; i++) {
+	            if(_solucion[i][j] == _casillero_relleno) contador++;
+	            else {
+	                if(contador > 0) {
+	                    pistasColumna.add(contador);
+	                    contador = 0;
+	                }
+	            }
+	        }
+	        if(contador > 0) pistasColumna.add(contador);
+	        if(pistasColumna.isEmpty()) pistasColumna.add(0);
+	        _pistasEnColumnas.set(j, pistasColumna);
+	    }
+	}
 	
-	//=========================================== METODOS A MEJORAR ==================================================================
 	
-	//validarLinea y ValidarCasilleros están mal, hay que revisarlos
+	public boolean validarCasillero(int fila, int columna) {
+	    if(_tablero[fila][columna] != _casillero_relleno) return true; //solo validamos rellenos
+	    boolean filaValida = validarLinea(_tablero[fila], columna, _pistasEnFilas.get(fila));
+
+	    int[] columnaActual = new int[_fila];
+	    for(int i = 0; i < _fila; i++)
+	        columnaActual[i] = _tablero[i][columna];
+
+	    boolean columnaValida = validarLinea(columnaActual, fila, _pistasEnColumnas.get(columna));
+	    return filaValida && columnaValida;
+	}
+	
 	
 	private boolean validarLinea(int[] linea, int pos, List<Integer> pistas) {
-	    int bloqueIndex = 0;
+	    int bloque = 0;
 	    int contador = 0;
 
-	    for(int i = 0; i < linea.length; i++) {
-	        if(linea[i] == _casillero_relleno) {
-	            contador++;
-	            // Si excede la pista del bloque actual, es incorrecto
-	            if(bloqueIndex >= pistas.size() || contador > pistas.get(bloqueIndex)) {
-	                if(i == pos) return false; // solo falla el casillero actual
-	            }
-	        } else { //línea en blanco
+	    for(int i = 0; i <= pos; i++) {
+	        if(linea[i] == _casillero_relleno) contador++;
+	        else {
 	            if(contador > 0) {
-	                //finalizó un bloque
-	                bloqueIndex++;
+	                if(bloque >= pistas.size() || contador > pistas.get(bloque)) return false;
+	                bloque++;
 	                contador = 0;
 	            }
 	        }
 	    }
-
-	    //Si el casillero tocado está dentro de un bloque parcial o coincide con una pista, es válido
-	    int bloquePos = 0;
-	    int suma = 0;
-	    for(int p : pistas) {
-	        suma += p;
-	        if(pos < suma + bloquePos) return true; //está dentro de un bloque permitido
-	        bloquePos += 1; //espacio entre bloques
-	    }
-	    return false; //si no cae en ningún bloque permitido
-	}
-
-	public int validarCasillero(int fila, int columna) {
-	    if(_tablero[fila][columna] == _casillero_inicial) return _casillero_incorrecto;
-	    boolean filaValida = validarLinea(_tablero[fila], columna, _pistasEnFilas.get(fila));
-	    int[] columnaActual = new int[_fila];
-	    for(int i = 0; i < _fila; i++) columnaActual[i] = _tablero[i][columna];
-	    boolean columnaValida = validarLinea(columnaActual, fila, _pistasEnColumnas.get(columna));
-	    return (filaValida && columnaValida) ? _casillero_relleno : _casillero_incorrecto;
+	    //si el casillero actual está dentro de un bloque permitido
+	    return (contador > 0 && bloque < pistas.size() && contador <= pistas.get(bloque));
 	}
 	
-	//=============================================================================================================
+	public boolean[][] comprobarTablero() {
+	    boolean[][] resultado = new boolean[_fila][_columna];
 
+	    for(int i = 0; i < _fila; i++) {
+	        for(int j = 0; j < _columna; j++) {
+	            int jugador = _tablero[i][j];
+	            int solucion = _solucion[i][j];
+
+	            if(solucion == _casillero_relleno) resultado[i][j] = (jugador == _casillero_relleno);
+	            else
+	            	resultado[i][j] = (jugador == _casillero_inicial || jugador == _casillero_incorrecto);
+	        }
+	    }
+	    return resultado;
+	}
 
 }
 

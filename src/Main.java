@@ -9,7 +9,7 @@ public class Main {
 		//grafo de 5x5
 		Presenter presenter = new Presenter();
 		View vista = new View();
-		Tablero tablero = new Tablero(5,5);
+		Tablero tablero = new Tablero(3,3);
 		presenter.inicializarTableroPresenter(tablero, vista);
 		
 	}
