@@ -14,6 +14,7 @@ public class View {
 	private JButton[][] botones;
 	private VistaListener _listener;
 	private JButton btnAlternarVista;
+	private JButton btnComprobar;
 	
 	public View() {
 		initialize();
@@ -80,7 +81,8 @@ public class View {
 	    }
 
 	    //Botón comprobar
-	    JButton btnComprobar = new JButton("Ver resultado");
+	    btnComprobar = new JButton("Ver resultado");
+	    btnComprobar.setVisible(true);
 	    btnComprobar.addActionListener(e -> {
 	        if(_listener != null) _listener.comprobar(); 
 	    });
@@ -151,6 +153,11 @@ public class View {
 				botones[i][j].setEnabled(editable);
 			}
 		}
+	}
+	
+	// Deshabilita el boton hasta que se reinicie el juego
+	public void mostrarBotonComprobar(boolean mostrar) {
+		btnComprobar.setVisible(mostrar);
 	}
 	
 	// Habilitar boton para ver la solucion

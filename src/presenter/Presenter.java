@@ -48,14 +48,20 @@ public class Presenter implements VistaListener {
 	    tableroUsuario = _tablero.tableroActual();
 	    if(todoCorrecto){
 	    	javax.swing.JOptionPane.showMessageDialog(null, "¡Ganaste! El tablero está completamente correcto");
+	    	
+	    	// Impedir que el usuario siga cambiando los casilleros + deshabilitar boton comprobar
 	    	_vista.setTableroEditable(false);
-	    	_vista.mostrarTablero(tableroUsuario);	    }
+	    	_vista.mostrarTablero(tableroUsuario); //Agrega las "X" si el usuario no las marcó (se ve más prolijo)
+	    	_vista.mostrarBotonComprobar(false);
+	    	}
 	    else{
 	    	javax.swing.JOptionPane.showMessageDialog(null, "Perdiste. Hay casilleros incorrectos.");
 	    	
-	    	// Mostrar solución
+	    	// Mostrar solución y deshabilitar boton comprobar
 	    	_vista.setTableroEditable(false);
 	    	_vista.mostrarBotonAlternar(true);
+	    	_vista.mostrarTablero(tableroUsuario); //Agrega las "X" si el usuario no las marcó (se ve más prolijo)
+	    	_vista.mostrarBotonComprobar(false);
 	    	_vista.setTextoBotonAlternar("Ver solución");
 	    }
 	    
@@ -75,6 +81,7 @@ public class Presenter implements VistaListener {
 	    _tablero.calcularPistas();
 	    _vista.crearTableroView(_tablero.obtenerFilas(), _tablero._pistasEnFilas, _tablero._pistasEnColumnas);
 	    _vista.mostrarBotonAlternar(false);
+	    _vista.mostrarBotonComprobar(true);
 	    mostrandoSolucion = false;
 	}
 	
