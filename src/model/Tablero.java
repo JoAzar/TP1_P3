@@ -153,6 +153,23 @@ public class Tablero {
 	    }
 	    return resultado;
 	}
+	
+	// Crea una copia del tablero actual
+	public int[][] tableroActual(){
+		int[][] copia = new int[_fila][_columna];
+		
+		for(int i = 0; i < _fila; i++) {
+			for(int j = 0; j < _columna; j++) {
+				copia[i][j] = _tablero[i][j];
+			}
+		}
+		
+		return copia;
+	}
+	
+	public int[][] obtenerTableroSolucion(){
+		return _solucion;
+	}
 
 }
 

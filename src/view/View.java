@@ -13,6 +13,7 @@ public class View {
 	private JFrame frame;
 	private JButton[][] botones;
 	private VistaListener _listener;
+	private JButton btnAlternarVista;
 	
 	public View() {
 		initialize();
@@ -20,7 +21,9 @@ public class View {
 
 	private void initialize() {
 		frame = new JFrame("Nonograma");
-	    frame.setBounds(100, 100, 300, 300); //posición X e Y, tamaño ancho | alto
+		//frame.pack();
+		//frame.setLocationRelativeTo(null);
+	    frame.setBounds(100, 100, 500, 500); //posición X e Y, tamaño ancho | alto
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
 	}
@@ -87,11 +90,22 @@ public class View {
 	    btnReiniciar.addActionListener(e -> {
 	        if (_listener != null) _listener.reiniciarJuego();
 	    });
-	    panelPrincipal.add(btnReiniciar, BorderLayout.NORTH);
+	    
+	    //Botón alternar vista
+	    btnAlternarVista = new JButton("Ver solución");
+	    btnAlternarVista.setVisible(false);
+	    btnAlternarVista.addActionListener(e -> {
+	    	if(_listener != null) _listener.alternarVista();
+	    });
 
 	    //Panel principal
+	    JPanel panelBotones = new JPanel();
+	    panelBotones.add(btnReiniciar);
+	    panelBotones.add(btnComprobar);
+	    panelBotones.add(btnAlternarVista);
+	    
 	    panelPrincipal.add(panelTablero, BorderLayout.CENTER);
-	    panelPrincipal.add(btnComprobar, BorderLayout.SOUTH);
+	    panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
 	    frame.setContentPane(panelPrincipal);
 	    frame.revalidate();
 	    frame.repaint();
@@ -111,9 +125,41 @@ public class View {
 	    //Casillero X
 	    else if(estado == model.Tablero._casillero_incorrecto) {
 	        b.setText("X");
-	        b.setForeground(Color.RED);
 	        b.setBackground(Color.WHITE);
+	        b.setForeground(Color.RED);
 	    }   
+	}
+	
+	public void mostrarTablero(int[][] matriz) {
+		for(int i = 0; i < botones.length; i++) {
+			for(int j = 0; j < botones[i].length; j++) {
+				int estado = matriz[i][j];
+				if(estado == 0) {
+					actualizarCasillero(i, j, 2, true);
+				}
+				else {
+					actualizarCasillero(i, j, estado, true);
+				}
+			}
+		}
+	}
+	
+	// Bloquea los botones para que el usuario no pueda seguir cambiando las celdas después de ver solución.
+	public void setTableroEditable(boolean editable) {
+		for(int i = 0; i < botones.length; i++) {
+			for(int j = 0; j < botones[i].length; j++) {
+				botones[i][j].setEnabled(editable);
+			}
+		}
+	}
+	
+	// Habilitar boton para ver la solucion
+	public void mostrarBotonAlternar(boolean mostrar) {
+		btnAlternarVista.setVisible(mostrar);
+	}
+	
+	public void setTextoBotonAlternar(String texto) {
+		btnAlternarVista.setText(texto);
 	}
 	
 

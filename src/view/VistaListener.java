@@ -9,4 +9,6 @@ public interface VistaListener {
 	String pistasToString(List<Integer> vistaCol);
 
 	void reiniciarJuego();
+
+	void alternarVista();
 }

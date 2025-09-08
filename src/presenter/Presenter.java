@@ -7,6 +7,8 @@ import view.VistaListener;
 public class Presenter implements VistaListener {
 	Tablero _tablero;
 	View _vista;
+	private boolean mostrandoSolucion = false;
+	private int[][] tableroUsuario;
 	
 	public void inicializarTableroPresenter(Tablero tablero, View vista) {
 		_tablero = tablero;
@@ -34,23 +36,30 @@ public class Presenter implements VistaListener {
 
 	    for(int i = 0; i < resultado.length; i++) {
 	        for(int j = 0; j < resultado[i].length; j++) {
-	            int estado = _tablero.obtenerEstadoCasillero(i, j);
 	            boolean correcto = resultado[i][j];
-
-	            //Actualiza la vista
-	            _vista.actualizarCasillero(i, j, estado, correcto);
-
-	            //Imprime en consola || todos los print hay que borrarlos para agregar un pop up que diga que ganó
-	            if(correcto) System.out.println("Casillero (" + i + "," + j + ") correcto");
-	            else {
-	                System.out.println("Casillero (" + i + "," + j + ") incorrecto");
-	                todoCorrecto = false;
+	            
+	            if(!correcto) {
+	            	todoCorrecto = false;
 	            }
 	        }
 	    }
-
-	    if(todoCorrecto) System.out.println("¡El tablero está completamente correcto!");
-	    else System.out.println("Hay casilleros incorrectos");
+	    
+	    // Mensaje si gano o perdio
+	    tableroUsuario = _tablero.tableroActual();
+	    if(todoCorrecto){
+	    	javax.swing.JOptionPane.showMessageDialog(null, "¡Ganaste! El tablero está completamente correcto");
+	    	_vista.setTableroEditable(false);
+	    	_vista.mostrarTablero(tableroUsuario);	    }
+	    else{
+	    	javax.swing.JOptionPane.showMessageDialog(null, "Perdiste. Hay casilleros incorrectos.");
+	    	
+	    	// Mostrar solución
+	    	_vista.setTableroEditable(false);
+	    	_vista.mostrarBotonAlternar(true);
+	    	_vista.setTextoBotonAlternar("Ver solución");
+	    }
+	    
+	    
 	}
 	
 	public String pistasToString(List<Integer> pistas) {
@@ -65,6 +74,26 @@ public class Presenter implements VistaListener {
 		_tablero.generarSolucionRandom();
 	    _tablero.calcularPistas();
 	    _vista.crearTableroView(_tablero.obtenerFilas(), _tablero._pistasEnFilas, _tablero._pistasEnColumnas);
+	    _vista.mostrarBotonAlternar(false);
+	    mostrandoSolucion = false;
+	}
+	
+	// Cambiar entre el tablero del resultado del usuario y la solución
+	@Override
+	public void alternarVista() {
+		if(!mostrandoSolucion) {
+			// Mostrar tablero de solución
+			_vista.mostrarTablero(_tablero.obtenerTableroSolucion());
+			_vista.setTextoBotonAlternar("Ver tu resultado");
+			mostrandoSolucion = true;
+		}
+		else {
+			// Mostrar tablero respuesta del usuario
+			_vista.mostrarTablero(tableroUsuario);
+			_vista.setTextoBotonAlternar("Ver solución");
+			mostrandoSolucion = false;
+		}
+		
 	}
 	
 }

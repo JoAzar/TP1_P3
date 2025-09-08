@@ -6,7 +6,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		//grafo de 5x5
+		// Grafo de 5x5
 		Presenter presenter = new Presenter();
 		View vista = new View();
 		Tablero tablero = new Tablero(3,3);
