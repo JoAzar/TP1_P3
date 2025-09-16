@@ -67,6 +67,37 @@ public class Tablero {
 	            _solucion[i][j] = random.nextBoolean() ? _casillero_relleno : _casillero_inicial;
 	        }
 	    }
+	 // Segundo, garantiza que cada fila tenga al menos un 1.
+	    for (int i = 0; i < _fila; i++) {
+	        boolean filaConUno = false;
+	        for (int j = 0; j < _columna; j++) {
+	            if (_solucion[i][j] == _casillero_relleno) {
+	                filaConUno = true;
+	                break;
+	            }
+	        }
+	        // Si la fila no tiene un 1, coloca uno en una posición aleatoria.
+	        if (!filaConUno) {
+	            int posAleatoria = random.nextInt(_columna);
+	            _solucion[i][posAleatoria] = _casillero_relleno;
+	        }
+	    }
+
+	    // Tercero, garantiza que cada columna tenga al menos un 1.
+	    for (int j = 0; j < _columna; j++) {
+	        boolean columnaConUno = false;
+	        for (int i = 0; i < _fila; i++) {
+	            if (_solucion[i][j] == _casillero_relleno) {
+	                columnaConUno = true;
+	                break;
+	            }
+	        }
+	        // Si la columna no tiene un 1, coloca uno en una posición aleatoria.
+	        if (!columnaConUno) {
+	            int posAleatoria = random.nextInt(_fila);
+	            _solucion[posAleatoria][j] = _casillero_relleno;
+	        }
+	    }
 	}
 	
 	public void calcularPistas() {
@@ -84,7 +115,7 @@ public class Tablero {
 	            }
 	        }
 	        if(contador > 0) pistasFila.add(contador);
-	        if(pistasFila.isEmpty()) pistasFila.add(0);
+//	        if(pistasFila.isEmpty()) pistasFila.add(0);
 	        _pistasEnFilas.set(i, pistasFila);
 	    }
 
@@ -101,7 +132,7 @@ public class Tablero {
 	            }
 	        }
 	        if(contador > 0) pistasColumna.add(contador);
-	        if(pistasColumna.isEmpty()) pistasColumna.add(0);
+//	        if(pistasColumna.isEmpty()) pistasColumna.add(0);
 	        _pistasEnColumnas.set(j, pistasColumna);
 	    }
 	}

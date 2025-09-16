@@ -10,8 +10,8 @@ public class Presenter implements VistaListener {
 	private boolean mostrandoSolucion = false;
 	private int[][] tableroUsuario;
 	
-	public void inicializarTableroPresenter(Tablero tablero, View vista) {
-		_tablero = tablero;
+	public void inicializarTableroPresenter(int filas, int columnas, View vista) {
+		_tablero = new Tablero( filas,  columnas); // Se crea el tablero aquí
 		_vista = vista;
 		_vista.crearListener(this);
 		_tablero.generarSolucionRandom();
@@ -76,15 +76,57 @@ public class Presenter implements VistaListener {
 	    return sb.toString().trim();
 	}
 	
+//	public void reiniciarJuego() {
+//		_tablero.generarSolucionRandom();
+//	    _tablero.calcularPistas();
+//	    _vista.crearTableroView(_tablero.obtenerFilas(), _tablero._pistasEnFilas, _tablero._pistasEnColumnas);
+//	    _vista.mostrarBotonAlternar(false);
+//	    _vista.mostrarBotonComprobar(true);
+//	    mostrandoSolucion = false;
+//	}
+//	AGREGADO DESDE ACA PARA LOS NIVELES
+	
+	@Override
 	public void reiniciarJuego() {
-		_tablero.generarSolucionRandom();
+	    // Aquí puedes llamar a una nueva vista o un JOptionPane para elegir el nivel
+	    Object[] niveles = {"Fácil", "Medio", "Difícil"};
+	    String nivelElegido = (String) javax.swing.JOptionPane.showInputDialog(null,
+	        "Elige un nuevo nivel de dificultad:",
+	        "Reiniciar Juego",
+	        javax.swing.JOptionPane.PLAIN_MESSAGE,
+	        null,
+	        niveles,
+	        niveles[0]);
+
+	    if (nivelElegido == null) {
+	        return; // El usuario canceló la selección
+	    }
+
+	    int filas = 0;
+	    int columnas = 0;
+
+	    if (nivelElegido.equals("Fácil")) {
+	        filas = Nivel.FACIL.getFilas();
+	        columnas = Nivel.FACIL.getColumnas();
+	    } else if (nivelElegido.equals("Medio")) {
+	        filas = Nivel.MEDIO.getFilas();
+	        columnas = Nivel.MEDIO.getColumnas();
+	    } else if (nivelElegido.equals("Difícil")) {
+	        filas = Nivel.DIFICIL.getFilas();
+	        columnas = Nivel.DIFICIL.getColumnas();
+	    }
+	    
+	    // Crear un nuevo tablero con las dimensiones elegidas
+	    _tablero = new Tablero(filas, columnas);
+	    _tablero.generarSolucionRandom();
 	    _tablero.calcularPistas();
+	    
+	    // Recrear la vista con el nuevo tablero
 	    _vista.crearTableroView(_tablero.obtenerFilas(), _tablero._pistasEnFilas, _tablero._pistasEnColumnas);
 	    _vista.mostrarBotonAlternar(false);
 	    _vista.mostrarBotonComprobar(true);
 	    mostrandoSolucion = false;
 	}
-	
 	// Cambiar entre el tablero del resultado del usuario y la solución
 	@Override
 	public void alternarVista() {
@@ -102,5 +144,30 @@ public class Presenter implements VistaListener {
 		}
 		
 	}
-	
+	 // Define los niveles del juego   AGREGADO PARALOS NIVELES
+    public enum Nivel {
+        FACIL(5, 5),
+        MEDIO(10, 10),
+        DIFICIL(15, 15);
+
+        private final int filas;
+        private final int columnas;
+
+        Nivel(int filas, int columnas) {
+            this.filas = filas;
+            this.columnas = columnas;
+        }
+
+        public int getFilas() {
+            return filas;
+        }
+
+        public int getColumnas() {
+            return columnas;
+        }
+    }
+	public void setVista(View vista) {
+		// TODO Auto-generated method stub
+		
+	}	
 }

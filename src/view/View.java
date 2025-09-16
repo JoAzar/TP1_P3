@@ -26,6 +26,7 @@ public class View {
 		//frame.setLocationRelativeTo(null);
 	    frame.setBounds(100, 100, 500, 500); //posición X e Y, tamaño ancho | alto
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.getContentPane().setLayout(null);
 	    
 	}
 	
